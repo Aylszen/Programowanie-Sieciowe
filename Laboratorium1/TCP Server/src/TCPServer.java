@@ -15,8 +15,8 @@ class TCPServer {
 			System.out.println("Received: " + clientSentence);
 			switch (clientSentence) {
 			case "LIST":
-				File curDir = new File("C:\\Users\\student\\Documents\\Test");
-			    getAllFiles(curDir,outToClient);
+				File curDir = new File("C:\\Users\\ekrzkit\\repo\\Programowanie-Sieciowe\\Laboratorium1\\Documents");
+				getAllFiles(curDir, outToClient);
 				break;
 			case "SHUTDOWN":
 				connectionSocket.close();
@@ -25,18 +25,15 @@ class TCPServer {
 				outToClient.writeBytes(clientSentence + "\n");
 				break;
 			}
-
 		}
 	}
-	private static void getAllFiles(File curDir,DataOutputStream outToClient) throws IOException {
 
-        File[] filesList = curDir.listFiles();
-        for(File f : filesList){
-            if(f.isDirectory())
-            	outToClient.writeBytes(f.getName() + "\n");
-            if(f.isFile()){
-            	outToClient.writeBytes(f.getName() + "\n ");
-            }
-        }
+	private static void getAllFiles(File curDir, DataOutputStream outToClient) throws IOException {
+
+		File[] filesList = curDir.listFiles();
+		for (File f : filesList) {
+			if (f.isFile())
+				outToClient.writeBytes(f.getName() + "\n");
+		}
 	}
 }

@@ -4,26 +4,32 @@ import java.net.*;
 public class TCPKlient {
 
 	public static void main(String[] args) throws UnknownHostException, IOException {
-		String sentence = null, usersentence = "temp";
+		String sentence = null, usersentence = null;
 		Socket clientSocket = null;
-		BufferedReader inFromServer = null;
+		BufferedReader inFromServer = null, inFromUser = null;
+		DataOutputStream outToServer = null;
+				
+		while (true){
 		clientSocket = new Socket("127.0.0.1", 6789);
-		while (true) {
-			BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
-			DataOutputStream outToServer = null;
-			outToServer = new DataOutputStream(clientSocket.getOutputStream());
-			usersentence = inFromUser.readLine();
-			outToServer.writeBytes(usersentence + "\n");
-			inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-			sentence = inFromServer.readLine();
-			System.out.println("FROM SERVER: " + sentence);
-			switch (sentence) {
-			case "QUIT":
-				clientSocket.close();
-				break;
-			default:
-				break;
+			
+		inFromUser = new BufferedReader(new InputStreamReader(System.in));
+		outToServer = new DataOutputStream(clientSocket.getOutputStream());
+		inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+		usersentence = inFromUser.readLine();
+		outToServer.writeBytes(usersentence + "\n");
+
+		sentence = inFromServer.readLine();
+		System.out.println("FROM SERVER: " + sentence);
+		
+		switch (sentence) {
+		case "QUIT":
+			clientSocket.close();
+			break;
+		case "null":
+			System.out.println("Server was closed!!");
+		default:
+			break;
 			}
-			}
+		}
 	}
 }
