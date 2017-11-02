@@ -2,24 +2,43 @@ import java.io.*;
 import java.net.*;
 
 class TCPServer {
-	public static void main(String argv[]) throws Exception {
+	@SuppressWarnings("resource")
+	public static void main(String argv[]) {
 		String clientSentence;
-		ServerSocket welcomeSocket = new ServerSocket(6789);
+		ServerSocket welcomeSocket = null;
+		final int PORT = 6789;
+		try {
+			welcomeSocket = new ServerSocket(PORT);
+		} catch (IOException e) {
+			System.out.println("PORT ALREADY TAKEN: " + PORT + "\n" + e.getMessage());
+		}
 		String[] clientSentenceArray;
 		final String LOCAL_DIRETORY = "C:\\Users\\Krzysiek\\repo\\Programowanie-Sieciowe\\Laboratorium1\\ServerDocuments";
 		File curDir = new File(LOCAL_DIRETORY);
-		
+
 		while (true) {
-			Socket connectionSocket = welcomeSocket.accept();
-			DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
-			BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
+			try {
+				Socket connectionSocket = welcomeSocket.accept();
+				DataOutputStream outToClient = new DataOutputStream(connectionSocket.getOutputStream());
+				BufferedReader inFromClient = new BufferedReader(
+						new InputStreamReader(connectionSocket.getInputStream()));
 
-			clientSentence = inFromClient.readLine();
-			System.out.println("Received: " + clientSentence);
-			clientSentenceArray = clientSentence.split(" ");
+				clientSentence = inFromClient.readLine();
+				System.out.println("Received: " + clientSentence);
+				clientSentenceArray = clientSentence.split(" ");
+				outToClient.writeBytes(clientSentence + "\n");
+				checkClientSentence(clientSentence, clientSentenceArray, LOCAL_DIRETORY, curDir, connectionSocket,
+						outToClient);
 
-			checkClientSentence(clientSentence, clientSentenceArray, LOCAL_DIRETORY, curDir, connectionSocket,
-					outToClient);
+			} catch (FileNotFoundException e) {
+				System.out.println("FILE NOT FOUND: /n" + e.getMessage());
+
+			} catch (IOException e) {
+				System.out.println("IO ERROR: /n" + e.getMessage());
+			} catch (NullPointerException e) {
+				System.out.println("NULL POINTER: /n" + e.getMessage());
+				return;
+			}
 		}
 	}
 
@@ -31,7 +50,9 @@ class TCPServer {
 			outToClient.writeBytes(getAllFiles(curDir) + "\n");
 			break;
 		case "SHUTDOWN":
+			outToClient.writeBytes(clientSentence + "\n");
 			connectionSocket.close();
+			System.exit(1);
 			break;
 		case "SHOW":
 			FileReader file = new FileReader(
@@ -44,25 +65,25 @@ class TCPServer {
 			}
 			outToClient.writeBytes(allLines + "\n");
 			file.close();
+			break;
 		case "GET":
-			if (clientSentenceArray[1]!="")
-			{
-				File myFile = new File(LOCAL_DIRETORY + "\\" + clientSentenceArray[1]);
 
-				byte[] mybytearray = new byte[(int) myFile.length()];
-				BufferedInputStream bis = new BufferedInputStream(new FileInputStream(myFile));
-				bis.read(mybytearray, 0, mybytearray.length);
-				OutputStream os = connectionSocket.getOutputStream();
-				DataOutputStream dos = new DataOutputStream(os);
-				dos.writeUTF(myFile.getName());
-				dos.writeLong(mybytearray.length);
-				os.write(mybytearray, 0, mybytearray.length);
-				os.flush();
-				os.close();
-				dos.close();
-				break;
-			}
-			
+			File myFile = new File(LOCAL_DIRETORY + "\\" + clientSentenceArray[1]);
+
+			byte[] mybytearray = new byte[(int) myFile.length()];
+			BufferedInputStream bis = new BufferedInputStream(new FileInputStream(myFile));
+			bis.read(mybytearray, 0, mybytearray.length);
+			OutputStream os = connectionSocket.getOutputStream();
+			DataOutputStream dos = new DataOutputStream(os);
+			dos.writeUTF(myFile.getName());
+			dos.writeLong(mybytearray.length);
+			os.write(mybytearray, 0, mybytearray.length);
+			os.flush();
+			os.close();
+			dos.close();
+			bis.close();
+			break;
+
 		default:
 			outToClient.writeBytes(clientSentence + "\n");
 			break;

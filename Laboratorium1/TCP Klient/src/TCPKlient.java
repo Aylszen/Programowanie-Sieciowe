@@ -3,9 +3,9 @@ import java.net.*;
 
 public class TCPKlient {
 
-	public static void main(String[] args) throws UnknownHostException, IOException {
-		String sentence = "", usersentence = null;
-		String[] usersentenceArray;
+	public static void main(String[] args) {
+		String sentence = "", userSentence = null;
+		String[] userSentenceArray;
 		Socket clientSocket = null;
 		BufferedReader inFromServer = null, inFromUser = null;
 		DataOutputStream outToServer = null;
@@ -13,36 +13,42 @@ public class TCPKlient {
 		final int PORT = 6789;
 		final String LOCAL_DIRETORY = "C:\\Users\\Krzysiek\\repo\\Programowanie-Sieciowe\\Laboratorium1\\ClientDocuments";
 		while (true) {
-			clientSocket = new Socket(IP_ADDRESS, PORT);
 
-			inFromUser = new BufferedReader(new InputStreamReader(System.in));
-			outToServer = new DataOutputStream(clientSocket.getOutputStream());
-			inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-			usersentence = inFromUser.readLine();
-			usersentenceArray = usersentence.split(" ");
-			outToServer.writeBytes(usersentence + "\n");
-			// sentence = inFromServer.readLine();
-			checkServerSentence(sentence, clientSocket, inFromServer);
-			checkUserSentence(usersentenceArray, sentence, clientSocket, inFromServer, LOCAL_DIRETORY);
+			try {
+				clientSocket = new Socket(IP_ADDRESS, PORT);
+				inFromUser = new BufferedReader(new InputStreamReader(System.in));
+				outToServer = new DataOutputStream(clientSocket.getOutputStream());
+				inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+				userSentence = inFromUser.readLine();
+				userSentenceArray = userSentence.split(" ");
+				outToServer.writeBytes(userSentence + "\n");
+				checkServerSentence(sentence, clientSocket, inFromServer);
+				checkClientSentence(userSentenceArray, sentence, clientSocket, inFromServer, LOCAL_DIRETORY);
+			} catch (UnknownHostException e) {
+				System.out.println("UNKNOWN HOST:" + e.getMessage());
+			} catch (IOException e) {
+				System.out.println("IO ERROR: \n" + e.getMessage());
+			}
+
 		}
 
 	}
 
-	public static void checkUserSentence(String[] usersentenceArray, String sentence, Socket clientSocket,
+	public static void checkClientSentence(String[] usersentenceArray, String sentence, Socket clientSocket,
 			BufferedReader inFromServer, String LOCAL_DIRETORY) throws IOException {
-		String[] temp = null;
+		String[] sentenceArray = null;
 		switch (usersentenceArray[0].toUpperCase()) {
 		case "LIST":
 			sentence = inFromServer.readLine();
-			temp = sentence.split("#");
-			for (int i = 0; i < temp.length; i++)
-				System.out.println(temp[i]);
+			sentenceArray = sentence.split("#");
+			for (int i = 0; i < sentenceArray.length; i++)
+				System.out.println(sentenceArray[i]);
 			break;
 		case "SHOW":
 			sentence = inFromServer.readLine();
-			temp = sentence.split("#");
-			for (int i = 0; i < temp.length; i++)
-				System.out.println(temp[i]);
+			sentenceArray = sentence.split("#");
+			for (int i = 0; i < sentenceArray.length; i++)
+				System.out.println(sentenceArray[i]);
 			break;
 		case "GET":
 			byte[] mybytearray = new byte[1024];
@@ -52,7 +58,6 @@ public class TCPKlient {
 			OutputStream os = new FileOutputStream(LOCAL_DIRETORY + "\\" + fileName);
 			int bytesRead;
 			long size = clientData.readLong();
-			System.out.println("size: " + size);
 			while (size > 0
 					&& (bytesRead = clientData.read(mybytearray, 0, (int) Math.min(mybytearray.length, size))) != -1) {
 				os.write(mybytearray, 0, bytesRead);
@@ -74,15 +79,12 @@ public class TCPKlient {
 		sentence = inFromServer.readLine();
 		switch (sentence.toUpperCase()) {
 		case "QUIT":
-			try {
-				clientSocket.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			clientSocket.close();
+			System.exit(1);
 			break;
-		case "NULL":
+		case "SHUTDOWN":
 			System.out.println("Server was closed!!");
+			break;
 		default:
 			break;
 		}
