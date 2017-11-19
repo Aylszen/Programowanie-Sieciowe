@@ -13,7 +13,7 @@ class TCPServer {
 			System.out.println("PORT ALREADY TAKEN: " + PORT + "\n" + e.getMessage());
 		}
 		String[] clientSentenceArray;
-		final String LOCAL_DIRETORY = "C:\\Users\\Krzysiek\\repo\\Programowanie-Sieciowe\\Laboratorium1\\ServerDocuments";
+		final String LOCAL_DIRETORY = "C:\\Users\\ekrzkit\\repo\\Programowanie-Sieciowe\\Laboratorium1\\ServerDocuments";
 		File curDir = new File(LOCAL_DIRETORY);
 
 		while (true) {

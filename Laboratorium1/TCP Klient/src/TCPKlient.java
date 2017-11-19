@@ -10,8 +10,8 @@ public class TCPKlient {
 		BufferedReader inFromServer = null, inFromUser = null;
 		DataOutputStream outToServer = null;
 		final String IP_ADDRESS = "127.0.0.1";
-		final int PORT = 6789;
-		final String LOCAL_DIRETORY = "C:\\Users\\Krzysiek\\repo\\Programowanie-Sieciowe\\Laboratorium1\\ClientDocuments";
+		final int PORT = 7;
+		final String LOCAL_DIRETORY = "C:\\Users\\ekrzkit\\repo\\Programowanie-Sieciowe\\Laboratorium1\\ClientDocuments";
 		while (true) {
 
 			try {
@@ -22,8 +22,10 @@ public class TCPKlient {
 				userSentence = inFromUser.readLine();
 				userSentenceArray = userSentence.split(" ");
 				outToServer.writeBytes(userSentence + "\n");
-				checkServerSentence(sentence, clientSocket, inFromServer);
-				checkClientSentence(userSentenceArray, sentence, clientSocket, inFromServer, LOCAL_DIRETORY);
+				//checkServerSentence(sentence, clientSocket, inFromServer);
+				//checkClientSentence(userSentenceArray, sentence, clientSocket, inFromServer, LOCAL_DIRETORY);
+				sentence = inFromServer.readLine();
+				System.out.println("FROM SERVER: " + sentence);
 			} catch (UnknownHostException e) {
 				System.out.println("UNKNOWN HOST:" + e.getMessage());
 			} catch (IOException e) {
