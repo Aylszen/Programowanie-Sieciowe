@@ -1,10 +1,3 @@
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.ServerSocket;
-import java.net.Socket;
 
 public class TCPServer {
 	public static void main(String argv[]) {
@@ -15,7 +8,7 @@ public class TCPServer {
 		new Thread(server).start();
 
 		try {
-			Thread.sleep(20 * 1000);
+			Thread.sleep(20 * 10000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
