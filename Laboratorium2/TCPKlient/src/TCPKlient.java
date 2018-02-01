@@ -1,5 +1,7 @@
 import java.io.*;
 import java.net.*;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 public class TCPKlient {
 
@@ -10,11 +12,11 @@ public class TCPKlient {
 		DataOutputStream outToServer = null;
 		final String IP_ADDRESS = "127.0.0.1";
 		final int PORT = 7;
-		
+		clientSocket = new Socket(IP_ADDRESS, PORT);
 		while (true) {
 
 			try {
-				clientSocket = new Socket(IP_ADDRESS, PORT);
+							
 				inFromUser = new BufferedReader(new InputStreamReader(System.in));
 				outToServer = new DataOutputStream(clientSocket.getOutputStream());
 				inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -22,7 +24,7 @@ public class TCPKlient {
 				outToServer.writeBytes(userSentence + "\n");
 				sentence = inFromServer.readLine();
 				System.out.println("FROM SERVER: " + sentence);
-				clientSocket.close();
+				
 			} catch (UnknownHostException e) {
 				System.out.println("UNKNOWN HOST:" + e.getMessage());
 				System.exit(1);
@@ -30,9 +32,8 @@ public class TCPKlient {
 				System.out.println("IO ERROR: \n" + e.getMessage());
 				System.exit(1);
 			}
-
+			
 		}
-
 	}
 
 }

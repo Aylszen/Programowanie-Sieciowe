@@ -1,6 +1,8 @@
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.io.IOException;
 
 public class MultiThreadedServer implements Runnable {
@@ -26,19 +28,35 @@ public class MultiThreadedServer implements Runnable {
 		while (!isStopped()) {
 			Socket clientSocket = null;
 			counter++;
-			try {
-				clientSocket = this.serverSocket.accept();
+			if (Thread.activeCount() == 6) {
+				System.out.println("Exceeded number of maximal connections!!");
+				System.out.println("DISCONNECTING");
+				
+				stop();
+			} else {
+				try {
+					clientSocket = this.serverSocket.accept();
 
-			} catch (IOException e) {
-				if (isStopped()) {
-					System.out.println("Server Stopped.");
-					return;
+				} catch (IOException e) {
+					if (isStopped()) {
+						System.out.println("Server Stopped.");
+						return;
+					}
+					throw new RuntimeException("Error accepting client connection", e);
 				}
-				throw new RuntimeException("Error accepting client connection", e);
+				System.out.println("************************************");
+				System.out.println("Client thread started\nConnection from:");
+				System.out.println("IP/PORT:" + clientSocket.getRemoteSocketAddress());
+				Calendar cal = Calendar.getInstance();
+				SimpleDateFormat date = new SimpleDateFormat("dd MMMMM yyyy");
+				System.out.println("Date: " + date.format(cal.getTime()));
+				SimpleDateFormat time = new SimpleDateFormat("HH:mm:ss");
+				System.out.println("Time: " + time.format(cal.getTime()));
+				System.out.println("************************************");
+				new Thread(new ClientThread(clientSocket, counter)).start();
 			}
-			new Thread(new WorkerRunnable(clientSocket, counter)).start();
-
 		}
+
 		System.out.println("Server Stopped.");
 	}
 
