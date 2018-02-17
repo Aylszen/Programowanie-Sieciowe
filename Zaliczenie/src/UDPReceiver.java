@@ -9,6 +9,7 @@ public class UDPReceiver implements Runnable {
 	String msgRec;
 	MulticastSocket mcSocket;
 	DatagramPacket packet;
+
 	public UDPReceiver(List list, MulticastSocket mcSocket) {
 		this.list = list;
 		this.mcSocket = mcSocket;
@@ -18,7 +19,7 @@ public class UDPReceiver implements Runnable {
 	@Override
 	public void run() {
 		while (true) {
-			//System.out.println(System.currentTimeMillis());
+			// System.out.println(System.currentTimeMillis());
 			try {
 				mcSocket.receive(packet);
 			} catch (IOException e) {
@@ -26,8 +27,8 @@ public class UDPReceiver implements Runnable {
 				e.printStackTrace();
 			}
 			msgRec = new String(packet.getData(), packet.getOffset(), packet.getLength());
-			System.out.println("Received: " + msgRec);
-			if (msgRec != "") {
+			//System.out.println("Received: " + msgRec);
+			if (msgRec != "" && msgRec.contains("OFFER ADDRESS PORT")) {
 				list.add(msgRec);
 			}
 		}

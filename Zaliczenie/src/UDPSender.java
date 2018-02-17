@@ -36,10 +36,8 @@ public class UDPSender implements Runnable {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		byte[] msg = "DISCOVERY".getBytes();
-		DatagramPacket packet = new DatagramPacket(msg, msg.length);
-		packet.setAddress(mcIPAddress);
-		packet.setPort(mcPort);
+		DatagramPacket packet = null;
+		packet = sendDiscovery(packet, mcIPStr, mcIPAddress, mcPort);
 		try {
 			udpSocket.send(packet);
 		} catch (IOException e) {
@@ -56,7 +54,7 @@ public class UDPSender implements Runnable {
 
 			System.out.println("Waiting for a  multicast message...");
 			boolean flag = true;
-			int k = 0;
+			int k = 999;
 			int sleepTime = 3000;
 			while (flag) {
 				Thread udpReceiver;
@@ -72,10 +70,17 @@ public class UDPSender implements Runnable {
 				k = Integer.parseInt(inFromUser.readLine());
 				flag = false;
 				udpReceiver.stop();
-				if (list.getItemCount() == 0)
-				{
+				if (k == 999 || list.getItemCount() == 0) {
 					sleepTime = 15000;
 					flag = true;
+					packet = sendDiscovery(packet, mcIPStr, mcIPAddress, mcPort);
+					try {
+						udpSocket.send(packet);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					System.out.println("Sent a  multicast message.");
 				}
 			}
 			String[] tempTab;
@@ -100,4 +105,11 @@ public class UDPSender implements Runnable {
 		udpSocket.close();
 	}
 
+	public DatagramPacket sendDiscovery(DatagramPacket packet, String mcIPStr, InetAddress mcIPAddress, int mcPort) {
+		byte[] msg = "DISCOVERY".getBytes();
+		packet = new DatagramPacket(msg, msg.length);
+		packet.setAddress(mcIPAddress);
+		packet.setPort(mcPort);
+		return packet;
+	}
 }

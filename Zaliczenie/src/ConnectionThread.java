@@ -29,6 +29,12 @@ public class ConnectionThread implements Runnable {
 				return;
 			} catch (IOException e) {
 				System.out.println("IO ERROR: " + e.getMessage());
+				try {
+					connectionSocket.close();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				return;
 			} catch (NullPointerException e) {
 				System.out.println("NULL POINTER: " + e.getMessage());

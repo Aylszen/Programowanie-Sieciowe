@@ -58,7 +58,7 @@ public class UDPListener implements Runnable{
 						e.printStackTrace();
 					}
 					
-			    	String temp = "OFFER ADDRESS PORT " + welcomeSocket.getInetAddress().getHostAddress() + " " + welcomeSocket.getLocalPort();
+					String temp = "OFFER ADDRESS PORT " + welcomeSocket.getInetAddress().getHostAddress() + " " + welcomeSocket.getLocalPort();
 					byte[] msgSent = temp.getBytes();
 					packet = new DatagramPacket(msgSent, msgSent.length);
 					System.out.println("[Multicast  Receiver] Sent");

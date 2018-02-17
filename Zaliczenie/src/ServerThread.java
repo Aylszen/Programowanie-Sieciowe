@@ -36,22 +36,22 @@ public class ServerThread implements Runnable {
 				try {
 					outToClient = new DataOutputStream(connectionSocket.getOutputStream());
 					outToClient.writeBytes("Server ready" + "\n");
+					counter--;
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				new Thread(new ConnectionThread(connectionSocket)).start();
-			}
-			else
-			{
+			} else {
 				try {
 					outToClient = new DataOutputStream(connectionSocket.getOutputStream());
 					outToClient.writeBytes("Server busy" + "\n");
+					counter--;
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				
+
 			}
 		}
 	}
