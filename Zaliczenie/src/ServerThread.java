@@ -14,7 +14,7 @@ public class ServerThread implements Runnable {
 	int PORT = 0;
 	Random generator = new Random();
 	InetAddress ipAddress;
-	int counter = 0;
+	static int counter = 0;
 
 	@Override
 	public void run() {
@@ -36,7 +36,6 @@ public class ServerThread implements Runnable {
 				try {
 					outToClient = new DataOutputStream(connectionSocket.getOutputStream());
 					outToClient.writeBytes("Server ready" + "\n");
-					counter--;
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();

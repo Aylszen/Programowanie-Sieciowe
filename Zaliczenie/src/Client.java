@@ -10,10 +10,13 @@ import javax.naming.CommunicationException;
 
 public class Client {
 	static int PORT = 0;
+	static int LAST_PORT = 0;
 	static String IP_ADDRESS = "";
+	static String LAST_IP_ADDRESS = "";
 	static boolean flag2 = true;
 	static boolean flag = true;
 	static int value = 1000;
+
 	public static void main(String[] args) throws UnknownHostException, IOException, InterruptedException {
 		String sentence = "";
 		BufferedReader inFromServer = null, inFromUser = null;
@@ -35,15 +38,22 @@ public class Client {
 		inFromUser = new BufferedReader(new InputStreamReader(System.in));
 		sentence = inFromServer.readLine();
 		System.out.println("FROM SERVER: " + sentence);
+		while (true)
+		{
+			
 
 		if (sentence.matches("Server ready")) {
 			flag2 = true;
+			System.out.println("Last connection to: " + LAST_IP_ADDRESS + " " + LAST_PORT);
 			while (flag2) {
 				flag2 = communation(inFromUser, inFromServer, outToServer, clientSocket, generator, sentence);
 			}
+			LAST_IP_ADDRESS = IP_ADDRESS;
+			LAST_PORT = PORT;
 		}
+		flag = true;
 		if (sentence.matches("Server busy") || flag2 == false) {
-			System.out.println("Last connection to: " + IP_ADDRESS + " " + PORT);
+			System.out.println("Last connection to: " + LAST_IP_ADDRESS + " " + LAST_PORT);
 			t = new Thread(new UDPSender());
 			t.start();
 			flag2 = true;
@@ -56,9 +66,15 @@ public class Client {
 			System.out.println(IP_ADDRESS + " " + PORT);
 			clientSocket = new Socket(IP_ADDRESS, PORT);
 			inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+			if (inFromServer.readLine().contains("Server busy"))
+					continue;
 			while (flag2) {
 				communation(inFromUser, inFromServer, outToServer, clientSocket, generator, sentence);
 			}
+			LAST_IP_ADDRESS = IP_ADDRESS;
+			LAST_PORT = PORT;
+			flag = true;
+		}
 		}
 	}
 
